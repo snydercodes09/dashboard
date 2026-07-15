@@ -260,6 +260,7 @@ function renderTodos() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   filtered.forEach(function (todo) {
     const div = document.createElement("div");
     div.className = `todo-item group flex items-start gap-4 p-4 rounded-xl transition-all duration-300 border border-white/5 ${
@@ -284,8 +285,9 @@ function renderTodos() {
                 </button>
             </div>
         `;
-    todoList.appendChild(div);
+    fragment.appendChild(div);
   });
+  todoList.appendChild(fragment);
 }
 
 if (todoForm) {
@@ -466,6 +468,7 @@ function renderGoals() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   goals.forEach(function (goal) {
     const div = document.createElement("div");
     div.className = `goal-item flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5 transition-all ${goal.completed ? "opacity-60" : "hover:bg-black/30"}`;
@@ -482,8 +485,9 @@ function renderGoals() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
         `;
-    goalsList.appendChild(div);
+    fragment.appendChild(div);
   });
+  goalsList.appendChild(fragment);
 }
 
 if (goalForm) {
