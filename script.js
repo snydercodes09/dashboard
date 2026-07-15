@@ -250,18 +250,18 @@ function renderTodos() {
     div.setAttribute("data-id", todo.id);
 
     div.innerHTML = `
-            <button class="mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${todo.completed ? "bg-primary border-primary text-white" : "border-gray-500 text-transparent hover:border-primary-light"}" data-action="toggle">
+            <button aria-label="Toggle task" class="mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${todo.completed ? "bg-primary border-primary text-white" : "border-gray-500 text-transparent hover:border-primary-light"}" data-action="toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </button>
             <div class="flex-grow">
                 <h4 class="font-medium text-white ${todo.completed ? "line-through text-gray-400" : ""}">${escapeHTML(todo.text)}</h4>
                 ${todo.details ? `<p class="text-sm text-gray-400 mt-1">${escapeHTML(todo.details)}</p>` : ""}
             </div>
-            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+                <button aria-label="Edit task" class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </button>
-                <button class="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10" data-action="delete">
+                <button aria-label="Delete task" class="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10" data-action="delete">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 </button>
             </div>
@@ -455,12 +455,12 @@ function renderGoals() {
 
     div.innerHTML = `
             <div class="flex items-center gap-3">
-                <button class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
+                <button aria-label="Toggle goal" class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </button>
                 <span class="font-medium text-white ${goal.completed ? "line-through text-gray-400" : ""}">${escapeHTML(goal.text)}</span>
             </div>
-            <button class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
+            <button aria-label="Delete goal" class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
         `;
