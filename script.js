@@ -260,6 +260,8 @@ function renderTodos() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
+
   filtered.forEach(function (todo) {
     const div = document.createElement("div");
     div.className = `todo-item group flex items-start gap-4 p-4 rounded-xl transition-all duration-300 border border-white/5 ${
@@ -284,8 +286,10 @@ function renderTodos() {
                 </button>
             </div>
         `;
-    todoList.appendChild(div);
+    fragment.appendChild(div);
   });
+
+  todoList.appendChild(fragment);
 }
 
 if (todoForm) {
