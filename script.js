@@ -732,6 +732,38 @@ function fetchWeather() {
   );
 }
 
+
+const WEATHER_CODE_MAP = {
+  0: "sunny",
+  1: "partlyCloudy",
+  2: "partlyCloudy",
+  3: "cloudy",
+  45: "foggy",
+  48: "foggy",
+  51: "rainy",
+  53: "rainy",
+  55: "rainy",
+  56: "rainy",
+  57: "rainy",
+  61: "rainy",
+  63: "rainy",
+  65: "rainy",
+  66: "rainy",
+  67: "rainy",
+  71: "snowy",
+  73: "snowy",
+  75: "snowy",
+  77: "snowy",
+  80: "rainy",
+  81: "rainy",
+  82: "rainy",
+  85: "snowy",
+  86: "snowy",
+  95: "thunderstorm",
+  96: "thunderstorm",
+  99: "thunderstorm",
+};
+
 function getWeatherByCoords(lat, lon) {
   if (weatherLoaded) return;
   weatherLoaded = true;
@@ -749,20 +781,7 @@ function getWeatherByCoords(lat, lon) {
       const precip = data.current.precipitation;
       const wind = data.current.wind_speed_10m;
 
-      let condition = "sunny";
-      if (weatherCode === 0) condition = "sunny";
-      else if ([1, 2].includes(weatherCode)) condition = "partlyCloudy";
-      else if ([3].includes(weatherCode)) condition = "cloudy";
-      else if ([45, 48].includes(weatherCode)) condition = "foggy";
-      else if (
-        [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(
-          weatherCode,
-        )
-      )
-        condition = "rainy";
-      else if ([71, 73, 75, 77, 85, 86].includes(weatherCode))
-        condition = "snowy";
-      else if ([95, 96, 99].includes(weatherCode)) condition = "thunderstorm";
+      let condition = WEATHER_CODE_MAP[weatherCode] || "sunny";
 
       if (wind > 25 && [0, 1, 2, 3].includes(weatherCode)) condition = "windy";
 
