@@ -584,6 +584,23 @@ function stopPomodoro() {
   pomoToggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
 }
 
+
+const POMO_ACTIVE_CLASSES = [
+  "bg-primary/20",
+  "text-primary-light",
+  "border-primary/30",
+];
+
+const POMO_INACTIVE_CLASSES = [
+  "bg-black/5",
+  "dark:bg-white/5",
+  "hover:bg-black/5",
+  "dark:hover:bg-white/10",
+  "text-gray-500",
+  "dark:text-gray-400",
+  "border-transparent",
+];
+
 function setPomodoroMode(mode, minutes) {
   stopPomodoro();
   pomodoroMode = mode;
@@ -592,20 +609,8 @@ function setPomodoroMode(mode, minutes) {
   updatePomodoroDisplay();
 
   document.querySelectorAll('[id^="mode"]').forEach(function (btn) {
-    btn.classList.remove(
-      "bg-primary/20",
-      "text-primary-light",
-      "border-primary/30",
-    );
-    btn.classList.add(
-      "bg-black/5",
-      "dark:bg-white/5",
-      "hover:bg-black/5",
-      "dark:hover:bg-white/10",
-      "text-gray-500",
-      "dark:text-gray-400",
-      "border-transparent",
-    );
+    btn.classList.remove(...POMO_ACTIVE_CLASSES);
+    btn.classList.add(...POMO_INACTIVE_CLASSES);
   });
 
   let btnId = "";
@@ -625,20 +630,8 @@ function setPomodoroMode(mode, minutes) {
 
   const activeBtn = document.querySelector(`#${btnId}`);
   if (activeBtn) {
-    activeBtn.classList.remove(
-      "bg-black/5",
-      "dark:bg-white/5",
-      "hover:bg-black/5",
-      "dark:hover:bg-white/10",
-      "text-gray-500",
-      "dark:text-gray-400",
-      "border-transparent",
-    );
-    activeBtn.classList.add(
-      "bg-primary/20",
-      "text-primary-light",
-      "border-primary/30",
-    );
+    activeBtn.classList.remove(...POMO_INACTIVE_CLASSES);
+    activeBtn.classList.add(...POMO_ACTIVE_CLASSES);
   }
   const labelEl = pomodoroLabel;
   if (labelEl) labelEl.textContent = label;
