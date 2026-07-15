@@ -43,15 +43,7 @@ let totalFocusSeconds =
 let todos = JSON.parse(localStorage.getItem("dashboard-todos")) || [];
 let currentFilter = "all";
 
-function escapeHTML(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+
 
 function initModals() {
   featureCards.forEach(function (card) {
@@ -272,8 +264,7 @@ function renderTodos() {
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </button>
             <div class="flex-grow">
-                <h4 class="font-medium text-white ${todo.completed ? "line-through text-gray-400" : ""}">${escapeHTML(todo.text)}</h4>
-                ${todo.details ? `<p class="text-sm text-gray-400 mt-1">${escapeHTML(todo.details)}</p>` : ""}
+                <h4 class="todo-title font-medium text-white ${todo.completed ? "line-through text-gray-400" : ""}"></h4>
             </div>
             <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
                 <button class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
@@ -284,6 +275,13 @@ function renderTodos() {
                 </button>
             </div>
         `;
+    div.querySelector(".todo-title").textContent = todo.text;
+    if (todo.details) {
+      const detailsP = document.createElement("p");
+      detailsP.className = "text-sm text-gray-400 mt-1";
+      detailsP.textContent = todo.details;
+      div.querySelector(".flex-grow").appendChild(detailsP);
+    }
     todoList.appendChild(div);
   });
 }
@@ -404,12 +402,21 @@ function renderPlanner() {
             </div>
             <div class="flex-grow">
                 <input type="text" class="planner-input w-full h-full bg-transparent border-none px-4 text-white placeholder-gray-600 focus:outline-none focus:bg-white/5" 
-                    placeholder="Plan this hour..." data-hour="${hour}" value="${escapeHTML(plannerData[hour] || "")}">
+                    placeholder="Plan this hour..." data-hour="${hour}">
             </div>
         </div>
     `;
   }
   plannerList.innerHTML = html;
+
+  // Set values securely after rendering HTML
+  const inputs = plannerList.querySelectorAll('.planner-input');
+  inputs.forEach(input => {
+    const h = input.getAttribute('data-hour');
+    if (plannerData[h]) {
+      input.value = plannerData[h];
+    }
+  });
 
   plannerList.querySelectorAll(".planner-input").forEach(function (input) {
     input.addEventListener("input", function (e) {
@@ -476,12 +483,13 @@ function renderGoals() {
                 <button class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </button>
-                <span class="font-medium text-white ${goal.completed ? "line-through text-gray-400" : ""}">${escapeHTML(goal.text)}</span>
+                <span class="goal-text font-medium text-white ${goal.completed ? "line-through text-gray-400" : ""}"></span>
             </div>
             <button class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
         `;
+    div.querySelector(".goal-text").textContent = goal.text;
     goalsList.appendChild(div);
   });
 }
