@@ -165,29 +165,43 @@ const bgImages = {
   },
 };
 
+// ⚡ Bolt: Cache formatters to avoid expensive creation on every tick
+const timeFormatter = new Intl.DateTimeFormat("en-US", {
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: true,
+});
+
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  weekday: "short",
+  month: "short",
+  day: "numeric",
+});
+
+// ⚡ Bolt: Cache DOM values to prevent unnecessary DOM writes
+let lastTimeStr = "";
+let lastDateStr = "";
+let lastBgUrl = "";
+
 function updateClock() {
   const now = new Date();
   const hours = now.getHours();
 
-  const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
+  if (widgetTime) {
+    const timeStr = timeFormatter.format(now);
+    if (timeStr !== lastTimeStr) {
+      widgetTime.textContent = timeStr;
+      lastTimeStr = timeStr;
+    }
+  }
 
-  if (widgetTime)
-    widgetTime.textContent = now.toLocaleTimeString("en-US", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  if (widgetDate)
-    widgetDate.textContent = now.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "numeric",
-    });
+  if (widgetDate) {
+    const dateStr = dateFormatter.format(now);
+    if (dateStr !== lastDateStr) {
+      widgetDate.textContent = dateStr;
+      lastDateStr = dateStr;
+    }
+  }
 
   let timeGroup = "night";
 
@@ -204,13 +218,17 @@ function updateClock() {
   }
 
   const bgUrl = bgImages[currentWeatherCondition][timeGroup];
-  document.body.style.backgroundImage = `url('${bgUrl}')`;
-  document.body.style.backgroundSize = "cover";
-  document.body.style.backgroundPosition = "center";
-  document.body.style.backgroundAttachment = "fixed";
 
-  if (navbarBg) {
-    navbarBg.style.backgroundImage = `url('${bgUrl}')`;
+  if (bgUrl !== lastBgUrl) {
+    document.body.style.backgroundImage = `url('${bgUrl}')`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+
+    if (navbarBg) {
+      navbarBg.style.backgroundImage = `url('${bgUrl}')`;
+    }
+    lastBgUrl = bgUrl;
   }
 }
 
