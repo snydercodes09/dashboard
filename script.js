@@ -567,7 +567,6 @@ function startPomodoro() {
       pomodoroTimeLeft--;
       if (pomodoroMode === "focus") {
         totalFocusSeconds++;
-        localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
       }
       updatePomodoroDisplay();
     } else {
@@ -582,6 +581,7 @@ function stopPomodoro() {
   pomodoroRunning = false;
   clearInterval(pomodoroInterval);
   pomoToggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
 }
 
 function setPomodoroMode(mode, minutes) {
@@ -853,3 +853,10 @@ function getWeatherByCoords(lat, lon) {
 }
 
 fetchWeather();
+
+// Save focus seconds if window is closed while timer is running
+window.addEventListener("beforeunload", () => {
+  if (pomodoroRunning && pomodoroMode === "focus") {
+    localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
+  }
+});
