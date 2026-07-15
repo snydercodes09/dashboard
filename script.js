@@ -736,6 +736,24 @@ function fetchWeather() {
   );
 }
 
+function getWeatherIcon(condition, isDay) {
+  if (condition === "sunny") {
+    if (isDay === 0) {
+      return '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+    } else {
+      return '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
+    }
+  } else if (condition === "cloudy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/>';
+  } else if (condition === "foggy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M4 22h16"/><path d="M4 18h16"/>';
+  } else if (condition === "snowy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
+  } else {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M8 22v-3"/><path d="M12 22v-3"/><path d="M16 22v-3"/>';
+  }
+}
+
 function getWeatherByCoords(lat, lon) {
   if (weatherLoaded) return;
   weatherLoaded = true;
@@ -805,26 +823,7 @@ function getWeatherByCoords(lat, lon) {
 
       const iconContainer = weatherIconContainer;
       if (iconContainer) {
-        let svg = "";
-        if (currentWeatherCondition === "sunny") {
-          if (data.current.is_day === 0) {
-            svg = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
-          } else {
-            svg =
-              '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
-          }
-        } else if (currentWeatherCondition === "cloudy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/>';
-        else if (currentWeatherCondition === "foggy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M4 22h16"/><path d="M4 18h16"/>';
-        else if (currentWeatherCondition === "snowy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
-        else
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M8 22v-3"/><path d="M12 22v-3"/><path d="M16 22v-3"/>';
+        const svg = getWeatherIcon(currentWeatherCondition, data.current.is_day);
 
         iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">${svg}</svg>`;
         iconContainer.classList.remove("hidden");
