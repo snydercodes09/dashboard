@@ -542,10 +542,11 @@ function updatePomodoroDisplay() {
   const seconds = pomodoroTimeLeft % 60;
   const timeStr = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-  const pomoTime = pomodoroTime;
-  if (pomoTime) pomoTime.textContent = timeStr;
+  const pomoTimeElement = document.querySelector("#pomodoroTime");
+  if (pomoTimeElement) pomoTimeElement.textContent = timeStr;
 
-  const ring = pomodoroRing;
+
+  const ring = document.querySelector("#pomodoroRing");
   if (ring) {
     const circumference = 2 * Math.PI * 130;
     const progress =
@@ -559,7 +560,8 @@ function startPomodoro() {
   if (pomodoroRunning) return;
   pomodoroRunning = true;
 
-  pomoToggleIcon.innerHTML =
+  const pomoToggleIcon = document.querySelector("#pomoToggleIcon");
+  if (pomoToggleIcon) pomoToggleIcon.innerHTML =
     '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
 
   pomodoroInterval = setInterval(function () {
@@ -581,7 +583,8 @@ function stopPomodoro() {
   if (!pomodoroRunning) return;
   pomodoroRunning = false;
   clearInterval(pomodoroInterval);
-  pomoToggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  const pomoToggleIcon = document.querySelector("#pomoToggleIcon");
+  if (pomoToggleIcon) pomoToggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
 }
 
 function setPomodoroMode(mode, minutes) {
@@ -640,7 +643,7 @@ function setPomodoroMode(mode, minutes) {
       "border-primary/30",
     );
   }
-  const labelEl = pomodoroLabel;
+  const labelEl = document.querySelector("#pomodoroLabel");
   if (labelEl) labelEl.textContent = label;
 }
 

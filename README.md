@@ -47,6 +47,14 @@ A modern, highly interactive productivity dashboard built with HTML, Tailwind CS
 - **Weather:** Uses the [Open-Meteo API](https://open-meteo.com/) for location-based weather data. It attempts to use your browser's Geolocation API to fetch local weather. If unavailable, it falls back to a default coordinate.
 - **Quotes:** Uses the [DummyJSON API](https://dummyjson.com/) to fetch random motivational quotes.
 
+## Testing
+
+Tests are written using Node's native test runner. To run the tests:
+
+```bash
+node --test test.js
+```
+
 ## License
 
 This project is open-source and available for personal or educational use.
