@@ -261,6 +261,7 @@ function renderTodos() {
   }
 
   const fragment = document.createDocumentFragment();
+
   filtered.forEach(function (todo) {
     const div = document.createElement("div");
     div.className = `todo-item group flex items-start gap-4 p-4 rounded-xl transition-all duration-300 border border-white/5 ${
@@ -269,24 +270,25 @@ function renderTodos() {
     div.setAttribute("data-id", todo.id);
 
     div.innerHTML = `
-            <button class="mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${todo.completed ? "bg-primary border-primary text-white" : "border-gray-500 text-transparent hover:border-primary-light"}" data-action="toggle">
+            <button aria-label="Toggle task" class="mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${todo.completed ? "bg-primary border-primary text-white" : "border-gray-500 text-transparent hover:border-primary-light"}" data-action="toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </button>
             <div class="flex-grow">
                 <h4 class="font-medium text-white ${todo.completed ? "line-through text-gray-400" : ""}">${escapeHTML(todo.text)}</h4>
                 ${todo.details ? `<p class="text-sm text-gray-400 mt-1">${escapeHTML(todo.details)}</p>` : ""}
             </div>
-            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+                <button aria-label="Edit task" class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </button>
-                <button class="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10" data-action="delete">
+                <button aria-label="Delete task" class="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10" data-action="delete">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 </button>
             </div>
         `;
     fragment.appendChild(div);
   });
+
   todoList.appendChild(fragment);
 }
 
@@ -476,12 +478,12 @@ function renderGoals() {
 
     div.innerHTML = `
             <div class="flex items-center gap-3">
-                <button class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
+                <button aria-label="Toggle goal" class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </button>
                 <span class="font-medium text-white ${goal.completed ? "line-through text-gray-400" : ""}">${escapeHTML(goal.text)}</span>
             </div>
-            <button class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
+            <button aria-label="Delete goal" class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
         `;
@@ -736,6 +738,24 @@ function fetchWeather() {
   );
 }
 
+function getWeatherIcon(condition, isDay) {
+  if (condition === "sunny") {
+    if (isDay === 0) {
+      return '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+    } else {
+      return '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
+    }
+  } else if (condition === "cloudy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/>';
+  } else if (condition === "foggy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M4 22h16"/><path d="M4 18h16"/>';
+  } else if (condition === "snowy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
+  } else {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M8 22v-3"/><path d="M12 22v-3"/><path d="M16 22v-3"/>';
+  }
+}
+
 function getWeatherByCoords(lat, lon) {
   if (weatherLoaded) return;
   weatherLoaded = true;
@@ -805,26 +825,7 @@ function getWeatherByCoords(lat, lon) {
 
       const iconContainer = weatherIconContainer;
       if (iconContainer) {
-        let svg = "";
-        if (currentWeatherCondition === "sunny") {
-          if (data.current.is_day === 0) {
-            svg = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
-          } else {
-            svg =
-              '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
-          }
-        } else if (currentWeatherCondition === "cloudy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/>';
-        else if (currentWeatherCondition === "foggy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M4 22h16"/><path d="M4 18h16"/>';
-        else if (currentWeatherCondition === "snowy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
-        else
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M8 22v-3"/><path d="M12 22v-3"/><path d="M16 22v-3"/>';
+        const svg = getWeatherIcon(currentWeatherCondition, data.current.is_day);
 
         iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">${svg}</svg>`;
         iconContainer.classList.remove("hidden");
