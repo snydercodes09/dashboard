@@ -575,7 +575,6 @@ function startPomodoro() {
       pomodoroTimeLeft--;
       if (pomodoroMode === "focus") {
         totalFocusSeconds++;
-        localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
       }
       updatePomodoroDisplay();
     } else {
@@ -861,3 +860,10 @@ function getWeatherByCoords(lat, lon) {
 }
 
 fetchWeather();
+
+// Save focus seconds if window is closed while timer is running
+window.addEventListener("beforeunload", () => {
+  if (pomodoroRunning && pomodoroMode === "focus") {
+    localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
+  }
+});
