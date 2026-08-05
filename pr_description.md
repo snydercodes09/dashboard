@@ -1,14 +1,8 @@
-Title: ⚡ Bolt: Debounce Planner LocalStorage Writes
+🎯 **What:**
+Replaced XSS-vulnerable `innerHTML` interpolations with secure DOM modifications (using `document.createElement()`, `.textContent`, and `.value`). The naive `escapeHTML` function was also removed completely.
 
-Description:
-💡 What:
-Implemented a 500ms debounce mechanism for the `localStorage` updates in the planner. Extracted the timeout variable outside the event listener loop so that even if the user switches rapidly between different hour inputs, we only write the serialized `plannerData` object to storage once they pause typing.
+⚠️ **Risk:**
+Cross-Site Scripting (XSS) via `innerHTML` and custom sanitization functions. By relying purely on replacing a few character entities (`<`, `>`, `&`, `'`, `"`), the implementation was vulnerable if a property string slipped un-sanitized, or an attacker found vectors within other attributes to bypass character filters. In this application context, input values originating from LocalStorage or the prompt could result in a malicious script evaluation on the page, compromising user data or stealing session material.
 
-🎯 Why:
-Previously, the code was triggering `JSON.stringify()` and `localStorage.setItem()` synchronously on every single keystroke (`input` event). Both are blocking operations that execute on the main thread. Writing to storage on every keystroke introduces unnecessary disk I/O and main thread overhead, which can cause typing latency and jank.
-
-📊 Measured Improvement:
-I created a benchmark script (`benchmark3.js`) to measure the performance impact of simulating a burst of 50 rapid keystrokes with a pre-populated `plannerData` payload.
-* Baseline (Synchronous Writes): ~4.02 ms main-thread blocking time
-* Optimized (Debounced Write): ~1.25 ms main-thread blocking time
-* Net Improvement: ~69% reduction in execution time for the synchronous event handler logic during a typing burst.
+🛡️ **Solution:**
+Replaced template literal string constructions bound to `innerHTML` with static structural generation via `innerHTML` coupled with selecting child nodes for direct injection. Assigning the content specifically to `element.textContent` and `input.value` securely leverages native browser protection over string evaluation. Added to the security journal `.jules/bolt.md`.

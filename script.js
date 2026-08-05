@@ -43,15 +43,7 @@ let totalFocusSeconds =
 let todos = JSON.parse(localStorage.getItem("dashboard-todos")) || [];
 let currentFilter = "all";
 
-function escapeHTML(str) {
-  if (!str) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+
 
 function initModals() {
   featureCards.forEach(function (card) {
@@ -260,6 +252,8 @@ function renderTodos() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
+
   filtered.forEach(function (todo) {
     const div = document.createElement("div");
     div.className = `todo-item group flex items-start gap-4 p-4 rounded-xl transition-all duration-300 border border-white/5 ${
@@ -268,24 +262,25 @@ function renderTodos() {
     div.setAttribute("data-id", todo.id);
 
     div.innerHTML = `
-            <button class="mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${todo.completed ? "bg-primary border-primary text-white" : "border-gray-500 text-transparent hover:border-primary-light"}" data-action="toggle">
+            <button aria-label="Toggle task" class="mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${todo.completed ? "bg-primary border-primary text-white" : "border-gray-500 text-transparent hover:border-primary-light"}" data-action="toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </button>
             <div class="flex-grow">
-                <h4 class="font-medium text-white ${todo.completed ? "line-through text-gray-400" : ""}">${escapeHTML(todo.text)}</h4>
-                ${todo.details ? `<p class="text-sm text-gray-400 mt-1">${escapeHTML(todo.details)}</p>` : ""}
+                <h4 class="todo-title font-medium text-white ${todo.completed ? "line-through text-gray-400" : ""}"></h4>
             </div>
-            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                <button class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
+            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+                <button aria-label="Edit task" class="text-gray-500 hover:text-blue-400 p-2 rounded-lg hover:bg-blue-500/10" data-action="update">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
                 </button>
-                <button class="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10" data-action="delete">
+                <button aria-label="Delete task" class="text-gray-500 hover:text-red-400 p-2 rounded-lg hover:bg-red-500/10" data-action="delete">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                 </button>
             </div>
         `;
-    todoList.appendChild(div);
+    fragment.appendChild(div);
   });
+
+  todoList.appendChild(fragment);
 }
 
 if (todoForm) {
@@ -404,14 +399,22 @@ function renderPlanner() {
             </div>
             <div class="flex-grow">
                 <input type="text" class="planner-input w-full h-full bg-transparent border-none px-4 text-white placeholder-gray-600 focus:outline-none focus:bg-white/5" 
-                    placeholder="Plan this hour..." data-hour="${hour}" value="${escapeHTML(plannerData[hour] || "")}">
+                    placeholder="Plan this hour..." data-hour="${hour}">
             </div>
         </div>
     `;
   }
   plannerList.innerHTML = html;
 
-  let plannerTimeout;
+  // Set values securely after rendering HTML
+  const inputs = plannerList.querySelectorAll('.planner-input');
+  inputs.forEach(input => {
+    const h = input.getAttribute('data-hour');
+    if (plannerData[h]) {
+      input.value = plannerData[h];
+    }
+  });
+
   plannerList.querySelectorAll(".planner-input").forEach(function (input) {
     input.addEventListener("input", function (e) {
       const h = e.target.getAttribute("data-hour");
@@ -470,6 +473,7 @@ function renderGoals() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   goals.forEach(function (goal) {
     const div = document.createElement("div");
     div.className = `goal-item flex items-center justify-between p-3 rounded-xl bg-black/20 border border-white/5 transition-all ${goal.completed ? "opacity-60" : "hover:bg-black/30"}`;
@@ -477,17 +481,18 @@ function renderGoals() {
 
     div.innerHTML = `
             <div class="flex items-center gap-3">
-                <button class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
+                <button aria-label="Toggle goal" class="w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors ${goal.completed ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-500 text-transparent hover:border-emerald-400"}" data-action="toggle">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </button>
-                <span class="font-medium text-white ${goal.completed ? "line-through text-gray-400" : ""}">${escapeHTML(goal.text)}</span>
+                <span class="goal-text font-medium text-white ${goal.completed ? "line-through text-gray-400" : ""}"></span>
             </div>
-            <button class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
+            <button aria-label="Delete goal" class="text-gray-500 hover:text-red-400 transition-colors p-1" data-action="delete">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
             </button>
         `;
-    goalsList.appendChild(div);
+    fragment.appendChild(div);
   });
+  goalsList.appendChild(fragment);
 }
 
 if (goalForm) {
@@ -546,10 +551,11 @@ function updatePomodoroDisplay() {
   const seconds = pomodoroTimeLeft % 60;
   const timeStr = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-  const pomoTime = pomodoroTime;
-  if (pomoTime) pomoTime.textContent = timeStr;
+  const pomoTimeElement = document.querySelector("#pomodoroTime");
+  if (pomoTimeElement) pomoTimeElement.textContent = timeStr;
 
-  const ring = pomodoroRing;
+
+  const ring = document.querySelector("#pomodoroRing");
   if (ring) {
     const circumference = 2 * Math.PI * 130;
     const progress =
@@ -563,7 +569,8 @@ function startPomodoro() {
   if (pomodoroRunning) return;
   pomodoroRunning = true;
 
-  pomoToggleIcon.innerHTML =
+  const pomoToggleIcon = document.querySelector("#pomoToggleIcon");
+  if (pomoToggleIcon) pomoToggleIcon.innerHTML =
     '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
 
   pomodoroInterval = setInterval(function () {
@@ -571,7 +578,6 @@ function startPomodoro() {
       pomodoroTimeLeft--;
       if (pomodoroMode === "focus") {
         totalFocusSeconds++;
-        localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
       }
       updatePomodoroDisplay();
     } else {
@@ -585,8 +591,26 @@ function stopPomodoro() {
   if (!pomodoroRunning) return;
   pomodoroRunning = false;
   clearInterval(pomodoroInterval);
-  pomoToggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  const pomoToggleIcon = document.querySelector("#pomoToggleIcon");
+  if (pomoToggleIcon) pomoToggleIcon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
 }
+
+
+const POMO_ACTIVE_CLASSES = [
+  "bg-primary/20",
+  "text-primary-light",
+  "border-primary/30",
+];
+
+const POMO_INACTIVE_CLASSES = [
+  "bg-black/5",
+  "dark:bg-white/5",
+  "hover:bg-black/5",
+  "dark:hover:bg-white/10",
+  "text-gray-500",
+  "dark:text-gray-400",
+  "border-transparent",
+];
 
 function setPomodoroMode(mode, minutes) {
   stopPomodoro();
@@ -596,20 +620,8 @@ function setPomodoroMode(mode, minutes) {
   updatePomodoroDisplay();
 
   document.querySelectorAll('[id^="mode"]').forEach(function (btn) {
-    btn.classList.remove(
-      "bg-primary/20",
-      "text-primary-light",
-      "border-primary/30",
-    );
-    btn.classList.add(
-      "bg-black/5",
-      "dark:bg-white/5",
-      "hover:bg-black/5",
-      "dark:hover:bg-white/10",
-      "text-gray-500",
-      "dark:text-gray-400",
-      "border-transparent",
-    );
+    btn.classList.remove(...POMO_ACTIVE_CLASSES);
+    btn.classList.add(...POMO_INACTIVE_CLASSES);
   });
 
   let btnId = "";
@@ -629,22 +641,10 @@ function setPomodoroMode(mode, minutes) {
 
   const activeBtn = document.querySelector(`#${btnId}`);
   if (activeBtn) {
-    activeBtn.classList.remove(
-      "bg-black/5",
-      "dark:bg-white/5",
-      "hover:bg-black/5",
-      "dark:hover:bg-white/10",
-      "text-gray-500",
-      "dark:text-gray-400",
-      "border-transparent",
-    );
-    activeBtn.classList.add(
-      "bg-primary/20",
-      "text-primary-light",
-      "border-primary/30",
-    );
+    activeBtn.classList.remove(...POMO_INACTIVE_CLASSES);
+    activeBtn.classList.add(...POMO_ACTIVE_CLASSES);
   }
-  const labelEl = pomodoroLabel;
+  const labelEl = document.querySelector("#pomodoroLabel");
   if (labelEl) labelEl.textContent = label;
 }
 
@@ -736,6 +736,24 @@ function fetchWeather() {
   );
 }
 
+function getWeatherIcon(condition, isDay) {
+  if (condition === "sunny") {
+    if (isDay === 0) {
+      return '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
+    } else {
+      return '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
+    }
+  } else if (condition === "cloudy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/>';
+  } else if (condition === "foggy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M4 22h16"/><path d="M4 18h16"/>';
+  } else if (condition === "snowy") {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
+  } else {
+    return '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M8 22v-3"/><path d="M12 22v-3"/><path d="M16 22v-3"/>';
+  }
+}
+
 function getWeatherByCoords(lat, lon) {
   if (weatherLoaded) return;
   weatherLoaded = true;
@@ -753,20 +771,7 @@ function getWeatherByCoords(lat, lon) {
       const precip = data.current.precipitation;
       const wind = data.current.wind_speed_10m;
 
-      let condition = "sunny";
-      if (weatherCode === 0) condition = "sunny";
-      else if ([1, 2].includes(weatherCode)) condition = "partlyCloudy";
-      else if ([3].includes(weatherCode)) condition = "cloudy";
-      else if ([45, 48].includes(weatherCode)) condition = "foggy";
-      else if (
-        [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(
-          weatherCode,
-        )
-      )
-        condition = "rainy";
-      else if ([71, 73, 75, 77, 85, 86].includes(weatherCode))
-        condition = "snowy";
-      else if ([95, 96, 99].includes(weatherCode)) condition = "thunderstorm";
+      let condition = WEATHER_CODE_MAP[weatherCode] || "sunny";
 
       if (wind > 25 && [0, 1, 2, 3].includes(weatherCode)) condition = "windy";
 
@@ -805,26 +810,7 @@ function getWeatherByCoords(lat, lon) {
 
       const iconContainer = weatherIconContainer;
       if (iconContainer) {
-        let svg = "";
-        if (currentWeatherCondition === "sunny") {
-          if (data.current.is_day === 0) {
-            svg = '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>';
-          } else {
-            svg =
-              '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>';
-          }
-        } else if (currentWeatherCondition === "cloudy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/>';
-        else if (currentWeatherCondition === "foggy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M4 22h16"/><path d="M4 18h16"/>';
-        else if (currentWeatherCondition === "snowy")
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><circle cx="8" cy="21" r="1"/><circle cx="12" cy="21" r="1"/><circle cx="16" cy="21" r="1"/>';
-        else
-          svg =
-            '<path d="M17.5 19a4.5 4.5 0 0 0 .5-8.97 7 7 0 0 0-13.9 1.44 4 4 0 0 0 1.9 7.53"/><path d="M8 22v-3"/><path d="M12 22v-3"/><path d="M16 22v-3"/>';
+        const svg = getWeatherIcon(currentWeatherCondition, data.current.is_day);
 
         iconContainer.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">${svg}</svg>`;
         iconContainer.classList.remove("hidden");
@@ -857,3 +843,10 @@ function getWeatherByCoords(lat, lon) {
 }
 
 fetchWeather();
+
+// Save focus seconds if window is closed while timer is running
+window.addEventListener("beforeunload", () => {
+  if (pomodoroRunning && pomodoroMode === "focus") {
+    localStorage.setItem("dashboard-focus-seconds", totalFocusSeconds);
+  }
+});
