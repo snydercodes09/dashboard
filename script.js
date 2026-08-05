@@ -419,7 +419,10 @@ function renderPlanner() {
     input.addEventListener("input", function (e) {
       const h = e.target.getAttribute("data-hour");
       plannerData[h] = e.target.value;
-      localStorage.setItem("dashboard-planner", JSON.stringify(plannerData));
+      clearTimeout(plannerTimeout);
+      plannerTimeout = setTimeout(function() {
+        localStorage.setItem("dashboard-planner", JSON.stringify(plannerData));
+      }, 500);
     });
   });
 }
